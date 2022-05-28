@@ -3,6 +3,9 @@ const express = require('express');
 const connection = require('../connection');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+// const res = require('express/lib/response');
+// const { query } = require('express');
 require('dotenv').config();
 
 
@@ -48,8 +51,47 @@ router.post('/login', (req, res) => {
             }
         } else {
             return res.status(500).json(err);
+
         }
     })
+});
+
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+});
+
+router.post('/forgotPassword', (req, res) => {
+    const user = req.body;
+    query = "select email,password from user where email=?";
+    connection.query(query, [user.email], (err, results) => {
+        if (!err) {
+            if (results.length <= 0) {
+                return res.status(200).json({ message: "Password sent successfully to your email" });
+            } else {
+                var mailOptions = {
+                    from: process.env.EMAIL,
+                    to: results[0].email,
+                    subject: 'Password by Restaurant Management System',
+                    html: '<p><b>Your login details for Restaurant Management System</b><br><b>Email: </b>' + results[0].email + ' <br> <b>Password: </b>' + results[0].password + ' <br><a href="http://localhost:4200/user/login">Click here to login<a/></p>'
+                };
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+                return res.status(200).json({ message: "Password sent successfully to your email" });
+            }
+        } else {
+            return res.status(500).json(err);
+        }
+    });
 });
 
 module.exports = router;
