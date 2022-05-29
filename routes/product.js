@@ -5,6 +5,7 @@ const router = express.Router();
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkRole');
 
+//add product api
 router.post('/add', auth.authenticateToken, checkRole.checkRole, (req, res) => {
     let product = req.body;
     var query = "insert into product(name,categoryId,description,price,status)values(?,?,?,?,'true')";
@@ -13,6 +14,18 @@ router.post('/add', auth.authenticateToken, checkRole.checkRole, (req, res) => {
             return res.status(200).json({ message: "Product added successfully" });
         } else {
             return res.status(500).json(err)
+        }
+    });
+});
+
+//get products api
+router.get('/get', auth.authenticateToken, (req, res, next) => {
+    var query = "select p.id,p.name,p.description,p.price,p.status,c.id as categoryId,c.name as categoryName from product as p INNER JOIN category as c where p.categoryId = c.id";
+    connection.query(query, (err, results) => {
+        if (!err) {
+            return res.status(200).json(results);
+        } else {
+            return res.status(500).json(err);
         }
     });
 });
