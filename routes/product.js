@@ -30,9 +30,23 @@ router.get('/get', auth.authenticateToken, (req, res, next) => {
     });
 });
 
+//get by categoryId api
 router.get('/getByCategory/:id', auth.authenticateToken, (req, res, next) => {
     const id = req.params.id;
     var query = "select id,name from product where categoryId=? and status='true'";
+    connection.query(query, [id], (err, results) => {
+        if (!err) {
+            return res.status(200).json(results);
+        } else {
+            return res.status(500).json(err);
+        }
+    });
+});
+
+//get by id api
+router.get('/getById/:id', auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    var query = "select id,name,description,price from product where id=?";
     connection.query(query, [id], (err, results) => {
         if (!err) {
             return res.status(200).json(results);
