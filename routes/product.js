@@ -90,4 +90,20 @@ router.delete('/delete/:id', auth.authenticateToken, checkRole.checkRole, (req, 
     });
 });
 
+router.patch('/updateStatus', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+    let user = req.body;
+    var query = "update product set status=? where id=?";
+    connection.query(query, [user.status, user.id], (err, results) => {
+        if (!err) {
+            if (results.affectedRows == 0) {
+                return res.status(400).json({ message: "Product id does nor exists" });
+            } else {
+                return res.status(200).json({ message: "Product status updated successfully" });
+            }
+        } else {
+            return res.status(500).json(err);
+        }
+    });
+});
+
 module.exports = router;
