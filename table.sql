@@ -26,3 +26,16 @@ create table product(
     status VARCHAR(20),
     primary key(id)
 );
+
+create table bill(
+    id int NOT NULL AUTO_INCREMENT,
+    uuid VARCHAR(200) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    contactNumber VARCHAR(20) NOT NULL,
+    paymentMethod VARCHAR(50) NOT NULL,
+    total INT NOT NULL,
+    productDetails JSON DEFAULT NULL,
+    createdBy VARCHAR(255) NOT NULL,
+    primary key(id)
+);
