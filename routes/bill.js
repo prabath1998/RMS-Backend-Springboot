@@ -74,4 +74,20 @@ router.get('/getBills', auth.authenticateToken, (req, res, next) => {
     });
 });
 
+router.delete('/delete/:id', auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    var query = "delete from bill where id=?";
+    connection.query(query, [id], (err, results) => {
+        if (!err) {
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ message: "Bill id does not exist" })
+            } else {
+                return res.status(200).json({ message: "Bill deleted successfully" });
+            }
+        } else {
+            return res.status(500).json(err);
+        }
+    });
+});
+
 module.exports = router;
